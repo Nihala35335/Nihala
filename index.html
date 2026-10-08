@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OmniCalc Pro — Next-Gen Scientific &amp; Unit Calculator</title>
+  <meta name="description" content="A state-of-the-art calculator featuring standard arithmetic, scientific functions, multi-category unit converter, tactile sound effects, and calculation history.">
+  
+  <!-- Premium Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Reactive Background Blobs -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <div id="calculator-app">
+    <!-- Top Bar: Modes & Controls -->
+    <header class="calc-header">
+      <div class="brand">
+        <div class="brand-badge">PRO</div>
+        <span class="brand-title">OmniCalc</span>
+      </div>
+
+      <!-- Mode Switcher Tabs -->
+      <nav class="mode-tabs" role="tablist">
+        <button id="tab-standard" class="tab-btn active" role="tab" aria-selected="true" data-mode="standard">Standard</button>
+        <button id="tab-scientific" class="tab-btn" role="tab" aria-selected="false" data-mode="scientific">Scientific</button>
+        <button id="tab-converter" class="tab-btn" role="tab" aria-selected="false" data-mode="converter">Converter</button>
+      </nav>
+
+      <!-- Utility Actions -->
+      <div class="header-actions">
+        <button id="btn-sound" class="icon-btn active" title="Toggle Tactile Click Sound (M)" aria-label="Toggle Sound">
+          <span class="btn-icon">🔊</span>
+        </button>
+        <button id="btn-theme" class="icon-btn" title="Toggle Dark/Light Theme (T)" aria-label="Toggle Theme">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button id="btn-history-toggle" class="icon-btn" title="Calculation History (H)" aria-label="Toggle History">
+          <span class="btn-icon">📜</span>
+          <span id="history-badge" class="badge hidden">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport: Calculator / Converter -->
+    <main class="calc-body">
+      <!-- 1. CALCULATOR INTERFACE (Standard & Scientific) -->
+      <div id="calc-view" class="view-panel active">
+        <!-- OLED Display Container -->
+        <section class="display-panel" aria-live="polite">
+          <div class="display-meta">
+            <div class="meta-indicators">
+              <span id="deg-indicator" class="pill-tag">DEG</span>
+              <span id="mem-indicator" class="pill-tag hidden">M</span>
+              <span id="mode-indicator" class="pill-tag mode-tag">STD</span>
+            </div>
+            <button id="btn-copy" class="btn-copy-chip" title="Copy result to clipboard" aria-label="Copy Result">
+              <span class="copy-icon">📋</span> Copy
+            </button>
+          </div>
+
+          <!-- History Formula Line -->
+          <div id="history-display" class="history-line" title="Previous expression"></div>
+
+          <!-- Current Main Math Line -->
+          <div class="main-display-wrap">
+            <div id="main-display" class="main-display" contenteditable="false">0</div>
+          </div>
+        </section>
+
+        <!-- Memory Operations Bar -->
+        <div class="memory-bar">
+          <button class="mem-btn" data-action="mc" title="Memory Clear">MC</button>
+          <button class="mem-btn" data-action="mr" title="Memory Recall">MR</button>
+          <button class="mem-btn" data-action="m-plus" title="Memory Add">M+</button>
+          <button class="mem-btn" data-action="m-minus" title="Memory Subtract">M−</button>
+          <button class="mem-btn" data-action="ms" title="Memory Store">MS</button>
+        </div>
+
+        <!-- Scientific Extension Drawer / Grid -->
+        <div id="scientific-grid" class="scientific-keypad hidden">
+          <button class="key func-key" data-action="deg-rad" id="btn-deg-toggle">RAD</button>
+          <button class="key func-key" data-action="sin">sin</button>
+          <button class="key func-key" data-action="cos">cos</button>
+          <button class="key func-key" data-action="tan">tan</button>
+          <button class="key func-key" data-action="pi">π</button>
+          
+          <button class="key func-key" data-action="power">xʸ</button>
+          <button class="key func-key" data-action="asin">sin⁻¹</button>
+          <button class="key func-key" data-action="acos">cos⁻¹</button>
+          <button class="key func-key" data-action="atan">tan⁻¹</button>
+          <button class="key func-key" data-action="e">e</button>
+
+          <button class="key func-key" data-action="sqrt">√x</button>
+          <button class="key func-key" data-action="square">x²</button>
+          <button class="key func-key" data-action="ln">ln</button>
+          <button class="key func-key" data-action="log">log</button>
+          <button class="key func-key" data-action="factorial">n!</button>
+
+          <button class="key func-key" data-action="open-paren">(</button>
+          <button class="key func-key" data-action="close-paren">)</button>
+          <button class="key func-key" data-action="reciprocal">1/x</button>
+          <button class="key func-key" data-action="abs">|x|</button>
+          <button class="key func-key" data-action="exp">EXP</button>
+        </div>
+
+        <!-- Standard Main Keypad Grid -->
+        <div class="keypad-grid">
+          <button class="key special-key clear-key" data-action="all-clear" title="Clear All (Escape)">AC</button>
+          <button class="key special-key" data-action="clear-entry" title="Clear Entry">CE</button>
+          <button class="key special-key" data-action="backspace" title="Backspace (⌫)">⌫</button>
+          <button class="key op-key" data-action="percent" title="Percentage (%)">%</button>
+          <button class="key op-key divide-key" data-action="divide" title="Divide (/)">÷</button>
+
+          <button class="key num-key" data-key="7">7</button>
+          <button class="key num-key" data-key="8">8</button>
+          <button class="key num-key" data-key="9">9</button>
+          <button class="key op-key multiply-key" data-action="multiply" title="Multiply (*)">×</button>
+
+          <button class="key num-key" data-key="4">4</button>
+          <button class="key num-key" data-key="5">5</button>
+          <button class="key num-key" data-key="6">6</button>
+          <button class="key op-key subtract-key" data-action="subtract" title="Subtract (-)">−</button>
+
+          <button class="key num-key" data-key="1">1</button>
+          <button class="key num-key" data-key="2">2</button>
+          <button class="key num-key" data-key="3">3</button>
+          <button class="key op-key add-key" data-action="add" title="Add (+)">+</button>
+
+          <button class="key num-key" data-action="negate" title="Toggle Positive/Negative">±</button>
+          <button class="key num-key" data-key="0">0</button>
+          <button class="key num-key" data-key=".">.</button>
+          <button class="key equals-key" data-action="calculate" title="Calculate (Enter)">=</button>
+        </div>
+      </div>
+
+      <!-- 2. UNIT CONVERTER INTERFACE -->
+      <div id="converter-view" class="view-panel hidden">
+        <div class="converter-box">
+          <!-- Category selector pills -->
+          <div class="category-scroll">
+            <button class="cat-pill active" data-category="length">📏 Length</button>
+            <button class="cat-pill" data-category="weight">⚖️ Weight</button>
+            <button class="cat-pill" data-category="temperature">🌡️ Temp</button>
+            <button class="cat-pill" data-category="speed">🏎️ Speed</button>
+            <button class="cat-pill" data-category="data">💾 Digital</button>
+            <button class="cat-pill" data-category="time">⏱️ Time</button>
+          </div>
+
+          <!-- Unit Conversion Card -->
+          <div class="conv-card">
+            <div class="conv-row">
+              <label for="conv-from-input" class="conv-label">From</label>
+              <div class="conv-field">
+                <input type="number" id="conv-from-input" class="conv-num-input" value="1" step="any">
+                <select id="conv-from-unit" class="conv-select"></select>
+              </div>
+            </div>
+
+            <!-- Swap Button -->
+            <div class="swap-wrapper">
+              <button id="btn-swap-units" class="swap-btn" title="Swap Units (S)">
+                <span>⇄</span>
+              </button>
+            </div>
+
+            <div class="conv-row">
+              <label for="conv-to-input" class="conv-label">To</label>
+              <div class="conv-field">
+                <input type="number" id="conv-to-input" class="conv-num-input" readonly value="0">
+                <select id="conv-to-unit" class="conv-select"></select>
+              </div>
+            </div>
+
+            <!-- Formula Detail Footnote -->
+            <div id="conv-formula-text" class="conv-formula">1 Meter = 3.28084 Feet</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Side Drawer: History Tape Panel -->
+    <aside id="history-drawer" class="history-drawer hidden" aria-label="Calculation History">
+      <div class="drawer-header">
+        <h3 class="drawer-title">History Tape</h3>
+        <button id="btn-close-history" class="icon-btn-small" title="Close History">✕</button>
+      </div>
+
+      <div class="drawer-actions-bar">
+        <button id="btn-clear-history" class="text-action-btn">🗑️ Clear All</button>
+        <button id="btn-copy-history" class="text-action-btn">📋 Copy Tape</button>
+      </div>
+
+      <div id="history-list" class="history-items-container">
+        <div class="empty-history">No calculations yet.<br><small>Your calculations will appear here.</small></div>
+      </div>
+    </aside>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast" class="toast hidden">Copied to clipboard!</div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
